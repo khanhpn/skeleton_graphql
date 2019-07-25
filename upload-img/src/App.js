@@ -1,32 +1,33 @@
 import React from 'react';
 import './App.css';
-import {Query} from 'react-apollo';
+import {Mutation} from 'react-apollo';
 import gql from 'graphql-tag';
 
-const GET_CURRENT_USER = gql`
-  {
-    products {
-      id
-      name
+export const SINGLE_UPLOAD = gql`
+  mutation singleUpload($file: Upload!) {
+    singleUpload(file: $file) {
+      filename
+      mimetype
+      encoding
     }
   }
-`;
+`
 
 
 function App() {
   return (
     <div className="App">
-      <Query query={GET_CURRENT_USER}>
-        {({data, loading}) => {
-          const { products } = data;
-          if (loading || products.length <= 0) {
-            return <div>Loading ...</div>;
+      <Mutation mutation={SINGLE_UPLOAD}>
+      {singleUpload => (
+        <input type="file" required
+          onChange={
+            ({ target: { validity, files: file } }) => {
+              validity.valid && singleUpload({ variables: { file } })
+            }
           }
-          return (
-            <>{products[0].name}</>
-          )
-        }}
-      </Query>
+        />
+      )}
+    </Mutation>
     </div>
   );
 }
