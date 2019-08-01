@@ -2,6 +2,7 @@ import React from 'react';
 import './App.css';
 import {Mutation} from 'react-apollo';
 import gql from 'graphql-tag';
+import Dropzone from 'react-dropzone'
 
 export const SINGLE_UPLOAD = gql`
   mutation singleUpload($file: Upload!) {
@@ -19,13 +20,16 @@ function App() {
     <div className="App">
       <Mutation mutation={SINGLE_UPLOAD}>
       {singleUpload => (
-        <input type="file" required
-          onChange={
-            ({ target: { validity, files: file } }) => {
-              validity.valid && singleUpload({ variables: { file } })
-            }
-          }
-        />
+        <Dropzone onDrop={acceptedFiles => singleUpload({variables: {file: acceptedFiles}})}>
+          {({getRootProps, getInputProps}) => (
+            <section>
+              <div {...getRootProps()}>
+                <input {...getInputProps()} />
+                <p>Drag 'n' drop some files here, or click to select files</p>
+              </div>
+            </section>
+          )}
+        </Dropzone>
       )}
     </Mutation>
     </div>
